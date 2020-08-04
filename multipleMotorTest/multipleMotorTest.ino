@@ -50,20 +50,20 @@ void control()
   float t = DT * loop_counter;
 
   // You can experiment with the kd, kp, and p_des values to see the response of the motor
-  p_des = 0;
-  kd = 0.0f;
-  kp = average;
+//  p_des = 0;
+//  kd = 0.0f;
+//  kp = average;
 
   // Here are some decent low and slow values for jogging the motor position:
 
-  // p_des = 0.5* sin(1.5*t); // generates sine wave based on current time step
-  // p_des = average; // if you uncomment this one you are now controlling the motor position based on the potentiometer position
+   p_des = 2* sin(1.5*t); // generates sine wave based on current time step
+//   p_des = average; // if you uncomment this one you are now controlling the motor position based on the potentiometer position
 
   // Kp and kd values which are good for these p_des values
-  /*
+  
     kd = .5f;
-    kp = 1.0f; // you can probably make this larger to get a quicker response
-  */
+    kp = 2.0f; // you can probably make this larger to get a quicker response
+  
 
   pack_cmd();
   loop_counter++;     // Increment loop counter
@@ -174,6 +174,30 @@ void pack_cmd() {
   txMsg.buf[6] = ((kd_int & 0xF) << 4) | (t_int >> 8);
   txMsg.buf[7] = t_int & 0xff;
   Can0.write(txMsg);
+
+    txMsg.id = 0x02;
+  txMsg.len = 8;
+  txMsg.buf[0] = p_int >> 8;
+  txMsg.buf[1] = p_int & 0xFF;
+  txMsg.buf[2] = v_int >> 4;
+  txMsg.buf[3] = ((v_int & 0xF) << 4) | (kp_int >> 8);
+  txMsg.buf[4] = kp_int & 0xFF;
+  txMsg.buf[5] = kd_int >> 4;
+  txMsg.buf[6] = ((kd_int & 0xF) << 4) | (t_int >> 8);
+  txMsg.buf[7] = t_int & 0xff;
+  Can0.write(txMsg);
+
+    txMsg.id = 0x03;
+  txMsg.len = 8;
+  txMsg.buf[0] = p_int >> 8;
+  txMsg.buf[1] = p_int & 0xFF;
+  txMsg.buf[2] = v_int >> 4;
+  txMsg.buf[3] = ((v_int & 0xF) << 4) | (kp_int >> 8);
+  txMsg.buf[4] = kp_int & 0xFF;
+  txMsg.buf[5] = kd_int >> 4;
+  txMsg.buf[6] = ((kd_int & 0xF) << 4) | (t_int >> 8);
+  txMsg.buf[7] = t_int & 0xff;
+  Can0.write(txMsg);
 }
 
 void unpack_reply() {
@@ -196,8 +220,10 @@ void unpack_reply() {
   /*
     Serial.print("Position: ");
     Serial.println(position);
+
     Serial.print("Velocity: ");
     Serial.println(velocity);
+
     Serial.print("Current: ");
     Serial.println(current);
     Serial.println();
@@ -208,6 +234,30 @@ void unpack_reply() {
 
 void enable_motor() {
   txMsg.id = 0x01;
+  txMsg.len = 8;
+  txMsg.buf[0] = 0xFF;
+  txMsg.buf[1] = 0xFF;
+  txMsg.buf[2] = 0xFF;
+  txMsg.buf[3] = 0xFF;
+  txMsg.buf[4] = 0xFF;
+  txMsg.buf[5] = 0xFF;
+  txMsg.buf[6] = 0xFF;
+  txMsg.buf[7] = 0xFC;
+  Can0.write(txMsg);
+
+    txMsg.id = 0x02;
+  txMsg.len = 8;
+  txMsg.buf[0] = 0xFF;
+  txMsg.buf[1] = 0xFF;
+  txMsg.buf[2] = 0xFF;
+  txMsg.buf[3] = 0xFF;
+  txMsg.buf[4] = 0xFF;
+  txMsg.buf[5] = 0xFF;
+  txMsg.buf[6] = 0xFF;
+  txMsg.buf[7] = 0xFC;
+  Can0.write(txMsg);
+
+    txMsg.id = 0x03;
   txMsg.len = 8;
   txMsg.buf[0] = 0xFF;
   txMsg.buf[1] = 0xFF;
@@ -232,10 +282,58 @@ void disable_motor() {
   txMsg.buf[6] = 0xFF;
   txMsg.buf[7] = 0xFD;
   Can0.write(txMsg);
+
+    txMsg.id = 0x02;
+  txMsg.len = 8;
+  txMsg.buf[0] = 0xFF;
+  txMsg.buf[1] = 0xFF;
+  txMsg.buf[2] = 0xFF;
+  txMsg.buf[3] = 0xFF;
+  txMsg.buf[4] = 0xFF;
+  txMsg.buf[5] = 0xFF;
+  txMsg.buf[6] = 0xFF;
+  txMsg.buf[7] = 0xFD;
+  Can0.write(txMsg);
+
+    txMsg.id = 0x03;
+  txMsg.len = 8;
+  txMsg.buf[0] = 0xFF;
+  txMsg.buf[1] = 0xFF;
+  txMsg.buf[2] = 0xFF;
+  txMsg.buf[3] = 0xFF;
+  txMsg.buf[4] = 0xFF;
+  txMsg.buf[5] = 0xFF;
+  txMsg.buf[6] = 0xFF;
+  txMsg.buf[7] = 0xFD;
+  Can0.write(txMsg);
 }
 
 void zero_motor() {
   txMsg.id = 0x01;
+  txMsg.len = 8;
+  txMsg.buf[0] = 0xFF;
+  txMsg.buf[1] = 0xFF;
+  txMsg.buf[2] = 0xFF;
+  txMsg.buf[3] = 0xFF;
+  txMsg.buf[4] = 0xFF;
+  txMsg.buf[5] = 0xFF;
+  txMsg.buf[6] = 0xFF;
+  txMsg.buf[7] = 0xFE;
+  Can0.write(txMsg);
+
+    txMsg.id = 0x02;
+  txMsg.len = 8;
+  txMsg.buf[0] = 0xFF;
+  txMsg.buf[1] = 0xFF;
+  txMsg.buf[2] = 0xFF;
+  txMsg.buf[3] = 0xFF;
+  txMsg.buf[4] = 0xFF;
+  txMsg.buf[5] = 0xFF;
+  txMsg.buf[6] = 0xFF;
+  txMsg.buf[7] = 0xFE;
+  Can0.write(txMsg);
+
+    txMsg.id = 0x03;
   txMsg.len = 8;
   txMsg.buf[0] = 0xFF;
   txMsg.buf[1] = 0xFF;
